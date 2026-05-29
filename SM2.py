@@ -1,5 +1,7 @@
 import random
-letters='abcdefghijklmnopqrstuvwxyz'
+
+# Added uppercase letters and numbers
+letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 
 def even_odd_swap(x):
     if len(x)%2!=0:
@@ -48,15 +50,27 @@ def reverse_word(x):
         s = s+reverse(words[kk])+' '
     return s
 
+# Caesar cipher now supports:
+# lowercase, uppercase, numbers
 def caesar_cipher(x, n):   
     s=''
+
     for i in range(len(x)):
+
         if x[i] == ' ':
             s = s + ' '
+
         else:
             idx = letters.find(x[i])
-            new_idx = (idx+n)%26
-            s = s + letters[new_idx]
+
+            # character not found
+            if idx == -1:
+                s = s + x[i]
+
+            else:
+                new_idx = (idx+n)%len(letters)
+                s = s + letters[new_idx]
+
     return s        
 
 print()
@@ -64,63 +78,84 @@ print()
 
 # Create Message ('python' + secret_code)
 msg = 'python'
+
 secret_code = ''
 
-# secret_code: 10 random letters. 
-for kk in range(10):
-    n = random.randint(0, 25)
-    secret_code = secret_code + letters[n]
+# BONUS IDEA:
+# Secret code generated WITHOUT repeated letters
+while len(secret_code) < 10:
+
+    n = random.randint(0, len(letters)-1)
+
+    if letters[n] not in secret_code:
+        secret_code = secret_code + letters[n]
 
 msg = msg + secret_code
 
 # Pick one of the four operations
 encoder = random.randint(0, 3)
+
 encoder = 0
+
 if encoder == 0:
     msg_enc = msg
+
 elif encoder == 1:
     msg_enc = even_odd_swap(msg)
+
 elif encoder == 2:
     msg_enc = reverse(msg)
+
 else:
     msg_enc = swap_middle(msg)
 
-msg_enemy = caesar_cipher(msg_enc, random.randint(1, 25))
+shift = random.randint(1, len(letters)-1)
+
+msg_enemy = caesar_cipher(msg_enc, shift)
+
 print()
 print('I am hearing ...')
 print(msg_enemy)
 print()
 
-for kk in range(1, 26):
-    msg_dec = caesar_cipher(msg_enemy, kk)
+# Decoding
+for kk in range(1, len(letters)):
+
+    msg_dec = caesar_cipher(msg_enemy, -kk)
+
     msg_dec_eo = even_odd_swap(msg_dec)
+
     msg_dec_r  = reverse(msg_dec)
+
     msg_dec_ms = swap_middle(msg_dec)
    
-    #print(msg_dec, msg_dec_eo, msg_dec_r, msg_dec_ms)
     if msg_dec[0:6:1]=='python':
+
         print('code cracked ...')
-       # print('kk is equal to ...', kk)
         print('Secret code is ...')
         print(msg_dec[6::1])
         break
+
     elif msg_dec_eo[0:6:1]=='python':
+
         print('code cracked ...')
-       # print('kk is equal to ...', kk)
         print('Secret code is ...')
         print(msg_dec_eo[6::1])
         break
+
     elif msg_dec_r[0:6:1]=='python':
+
         print('code cracked ...')
-       # print('kk is equal to ...', kk)
         print('Secret code is ...')
         print(msg_dec_r[6::1])
         break
+
     elif msg_dec_ms[0:6:1]=='python':
+
         print('code cracked ...')
-       # print('kk is equal to ...', kk)
         print('Secret code is ...')
         print(msg_dec_ms[6::1])
         break
 
-#print(secret_code)
+print()
+print('Original secret code:', secret_code)
